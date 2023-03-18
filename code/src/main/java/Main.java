@@ -1,5 +1,7 @@
 import benchmark.EXACT_MAD;
 import benchmark.CORE_MAD;
+import benchmark.TP_MAD;
+import benchmark.DD_MAD;
 
 import java.io.IOException;
 
@@ -8,7 +10,7 @@ import static utils.FileHelper.READ;
 public class Main {
     public static void main(String[] args) throws IOException {
         double[] data = READ("/Users/howardguan/Documents/THU/DQ/" +
-                        "Query/CORE-Sketch/dataset/bitcoin.csv",
+                        "Query/CORE-Sketch/dataset/bitcoin-s.csv",
                 10000000, 10000000);
 //        Random r = new Random();
 //        double[] data = new double[1000000];
@@ -28,26 +30,24 @@ public class Main {
         double time_exact = System.nanoTime();
         double exact = EXACT_MAD.exact_mad(data, data.length)[0];
         time_exact = System.nanoTime() - time_exact;
-        System.out.println("Exact");
         double time_core_ori = System.nanoTime();
         double core = CORE_MAD.core_mad(data, maximum - minimum + 1,
                 1, 1000, false, false)[0];
         time_core_ori = System.nanoTime() - time_core_ori;
-        System.out.println("Ori");
         double time_core_opt = System.nanoTime();
-        double core_opt = CORE_MAD.core_mad(data, maximum - minimum + 1,
-                1, 1000, false, true)[0];
+//        double core_opt = CORE_MAD.core_mad(data, maximum - minimum + 1,
+//                1, 1000, false, true)[0];
+        double core_opt = TP_MAD.mad(data, 0.01,1000);
         time_core_opt = System.nanoTime() - time_core_opt;
-//        double time_dd = System.nanoTime();
-//        double dd = DD_MAD.dd_mad(data, maximum - minimum + 1,
-//                1, 0.1, 500, false);
-//        time_dd = System.nanoTime() - time_dd;
+        double time_dd = System.nanoTime();
+        double dd = DD_MAD.dd_mad(data, 0.01, 1000);
+        time_dd = System.nanoTime() - time_dd;
         System.out.println("EXACT_TIME: " + time_exact);
         System.out.println("CORE_TIME: " + time_core_ori);
         System.out.println("OPT_CORE_TIME: " + time_core_opt);
-//        System.out.println("DD_TIME: " + time_dd);
+        System.out.println("DD_TIME: " + time_dd);
         System.out.println("EXACT_MAD: " + exact);
         System.out.println("CORE_MAD: " + core_opt);
-//        System.out.println("DD_MAD: " + dd);
+        System.out.println("DD_MAD: " + dd);
     }
 }
