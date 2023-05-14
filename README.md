@@ -4,8 +4,7 @@
 
 This is the code for our paper "*CORE-Sketch: On Exact Computation of Median Absolute Deviation with Limited Space*". The code is writen in JAVA, in the folder "code\src\main\java".
 
-
-
+## Overview
 For the subfolders, they all serve as JAVA packages, and the functions are listed as follows:
 
 - benchmark: It contains the exact MAD algorithm No-Sketch and CORE-Sketch in EXACT_MAD.java and CORE_MAD.java respectively. The approximate MAD algorithm based on DD-Sketch is in DD_MAD.java. The TP algorithm based on TP-Sketch is in TP_MAD.java.
