@@ -344,7 +344,10 @@ public class CORESketch implements Serializable {
     public boolean data_read(boolean parallel, int threads) {
 //        if (parallel) return useful_count() * 8 * threads <= max_bucket * (32.125 + 16);
 //        else
-            return useful_count() * 8 <= max_bucket * (32.125 + 16);
+        return useful_count() * 8 <= max_bucket * (32.125 + 16);
+    }
+    public boolean data_read_norm() {
+        return useful_count() * 8 <= max_bucket * (32.125 + 16);
     }
 
     public double[] get_range() {

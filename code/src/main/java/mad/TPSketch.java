@@ -1,7 +1,7 @@
 package mad;
 
-import it.unimi.dsi.fastutil.longs.Long2LongMap;
-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import utils.Mad;
 
 import java.io.Serializable;
@@ -17,8 +17,8 @@ public class TPSketch implements Serializable {
     private int bucket_num_limit;
     private int threshold_for_compression;
 
-    private Long2LongOpenHashMap positive_buckets;
-    private Long2LongOpenHashMap negative_buckets;
+    private Int2LongOpenHashMap positive_buckets;
+    private Int2LongOpenHashMap negative_buckets;
     private double collapse_bound;
     private long zero_count;
 
@@ -41,8 +41,8 @@ public class TPSketch implements Serializable {
         this.gamma = 2 * alpha / (1 - alpha) + 1;
         this.multiplier = Math.log(Math.E) / (Math.log1p(gamma - 1));
         this.beta = 1;
-        this.positive_buckets = new Long2LongOpenHashMap((int)(bucket_num_limit * 0.75));
-        this.negative_buckets = new Long2LongOpenHashMap((int)(bucket_num_limit * 0.25));
+        this.positive_buckets = new Int2LongOpenHashMap((int)(bucket_num_limit * 0.75));
+        this.negative_buckets = new Int2LongOpenHashMap((int)(bucket_num_limit * 0.25));
         this.zero_count = 0;
         this.collapse_bound = -Double.MAX_VALUE;
         this.valid_range = new double[6];
@@ -79,12 +79,12 @@ public class TPSketch implements Serializable {
 
     public void merge(TPSketch sketch){
         zero_count += sketch.zero_count;
-        for(Long2LongMap.Entry entry: sketch.positive_buckets.long2LongEntrySet()){
-            positive_buckets.put(entry.getLongKey(), positive_buckets.getOrDefault(entry.getLongKey(), 0L) + entry.getLongValue());
+        for(Int2LongMap.Entry entry: sketch.positive_buckets.int2LongEntrySet()){
+            positive_buckets.put(entry.getIntKey(), positive_buckets.getOrDefault(entry.getIntKey(), 0L) + entry.getLongValue());
         }
 
-        for(Long2LongMap.Entry entry: sketch.negative_buckets.long2LongEntrySet()){
-            negative_buckets.put(entry.getLongKey(), negative_buckets.getOrDefault(entry.getLongKey(), 0L) + entry.getLongValue());
+        for(Int2LongMap.Entry entry: sketch.negative_buckets.int2LongEntrySet()){
+            negative_buckets.put(entry.getIntKey(), negative_buckets.getOrDefault(entry.getIntKey(), 0L) + entry.getLongValue());
         }
 
         this.collapse(bucket_num_limit);
@@ -93,7 +93,7 @@ public class TPSketch implements Serializable {
     private void collapse(int limit){
         if(sketch_size() > limit){
             int exceed = sketch_size() - bucket_num_limit;
-            Integer[] indices = negative_buckets.keySet().toArray(new Integer[0]);
+            int[] indices = negative_buckets.keySet().toIntArray();
             Arrays.sort(indices);
             long count = 0;
             for(int i = Math.max(0, indices.length - exceed); i < indices.length; ++i){
@@ -115,7 +115,7 @@ public class TPSketch implements Serializable {
                 if(zero_count > 0){
                     exceed--;
                 }
-                indices = positive_buckets.keySet().toArray(new Integer[0]);
+                indices = positive_buckets.keySet().toIntArray();
                 Arrays.sort(indices);
                 for(int i = exceed - 1; i >= 0; --i){
                     count += positive_buckets.remove(indices[i]);
@@ -129,11 +129,11 @@ public class TPSketch implements Serializable {
     private Bucket[] union_buckets(){
         Bucket[] buckets = new Bucket[sketch_size()];
         int i = 0;
-        for(Long2LongMap.Entry e: positive_buckets.long2LongEntrySet()){
-            buckets[i++] = new Bucket((int)e.getLongKey(), Math.pow(gamma, e.getLongKey() - 1), Math.pow(gamma, e.getKey()), e.getLongValue());
+        for(Int2LongMap.Entry e: positive_buckets.int2LongEntrySet()){
+            buckets[i++] = new Bucket((int)e.getIntKey(), Math.pow(gamma, e.getIntKey() - 1), Math.pow(gamma, e.getKey()), e.getLongValue());
         }
-        for(Long2LongMap.Entry e: negative_buckets.long2LongEntrySet()){
-            buckets[i++] = new Bucket((int)e.getLongKey(), -Math.pow(gamma, e.getLongKey()), -Math.pow(gamma, e.getKey() - 1), e.getLongValue());
+        for(Int2LongMap.Entry e: negative_buckets.int2LongEntrySet()){
+            buckets[i++] = new Bucket((int)e.getIntKey(), -Math.pow(gamma, e.getIntKey()), -Math.pow(gamma, e.getKey() - 1), e.getLongValue());
         }
         if(zero_count > 0){
             buckets[i] = new Bucket(0, 0, 0, zero_count);
@@ -249,8 +249,10 @@ public class TPSketch implements Serializable {
         int q_index = find_q_index(p_index, buckets, total_count);
         Bucket p = buckets[p_index];
         Bucket q = buckets[q_index];
-        if(p.lower_bound == collapse_bound || q.lower_bound == collapse_bound){
-            throw new IllegalArgumentException("The sketch has been compressed too much");
+        if(p.upper_bound == collapse_bound || q.upper_bound == collapse_bound || p.lower_bound == collapse_bound || q.lower_bound == collapse_bound){
+//            System.out.println("\t\tTP BOOM\t"+"The sketch has been compressed too much");
+            return new Mad(0, Double.MAX_VALUE);
+//            throw new IllegalArgumentException("The sketch has been compressed too much");
         }
 
 //        System.out.println("P and Q: " + p.index + ", " + q.index);
@@ -356,19 +358,19 @@ public class TPSketch implements Serializable {
         this.threshold_for_compression = threshold_for_compression;
     }
 
-    public Long2LongOpenHashMap getPositive_buckets() {
+    public Int2LongOpenHashMap getPositive_buckets() {
         return positive_buckets;
     }
 
-    public void setPositive_buckets(Long2LongOpenHashMap positive_buckets) {
+    public void setPositive_buckets(Int2LongOpenHashMap positive_buckets) {
         this.positive_buckets = positive_buckets;
     }
 
-    public Long2LongOpenHashMap getNegative_buckets() {
+    public Int2LongOpenHashMap getNegative_buckets() {
         return negative_buckets;
     }
 
-    public void setNegative_buckets(Long2LongOpenHashMap negative_buckets) {
+    public void setNegative_buckets(Int2LongOpenHashMap negative_buckets) {
         this.negative_buckets = negative_buckets;
     }
 

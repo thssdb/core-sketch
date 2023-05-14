@@ -1,0 +1,35 @@
+iot-benchmark.ipr
+iot-benchmark.iws
+# Eclipse IDE files
+**/.classpath
+**/.project
+**/.settings/
+mvnw
+mvnw.cmd
+.mvn/
+# src/main/resources/
+# intellij IDE files
+**/*.iml
+**/.idea/
+**/*.log
+# Apple OS X related
+**/.DS_Store
+
+# build generated
+**/target/
+**/build/
+
+# intermediately generated locally
+**/logs/
+
+
+*.jar
+*.gz
+*.tar.gz
+*.tar
+
+./conf/*.properties
+**/routine
+/target/
+
+data

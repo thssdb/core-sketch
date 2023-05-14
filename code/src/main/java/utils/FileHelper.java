@@ -17,7 +17,7 @@ public class FileHelper {
 
     public static double[] READ(String filename, int read_count, int total_count) throws IOException {
 
-        XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom();
+        XoRoShiRo128PlusRandom random = new XoRoShiRo128PlusRandom(2333);
 //        Random random = new Random();
         double threshold = read_count * 1.0 / total_count;
         double[] nums = new double[read_count];

@@ -53,7 +53,7 @@ public class SpaceLimitExp {
         double sigma = 2;
         double minimum = 100000;
         double maximum = -100000;
-//        double[] data = READ("E:\\MAD-data\\norm1.csv",100000000, 100000000);
+//         [] data = READ("E:\\MAD-data\\norm1.csv",100000000, 100000000);
 //        double[] data = READ("E:\\MAD-data\\chi1.csv",100000000, 100000000);
         double[] data = READ("E:\\MAD-data\\pareto1.csv",100000000, 100000000);
         for (int i = 0; i < data.length; i++) {
@@ -178,12 +178,12 @@ public class SpaceLimitExp {
                         e.printStackTrace();
                     }
                     long tmp_time = new Date().getTime();
-                    double approx_mad_v = DD_MAD.dd_mad_calcAlpha(data, maximum - minimum + 1, bucketList[bucketID]);
+                    double[] approx_mad_v = DD_MAD.dd_mad_calcAlpha(data, maximum - minimum + 1, bucketList[bucketID]);
                     time[bucketID] += (new Date().getTime() - tmp_time);
                     space[bucketID]+=DD_MAD.memory;
                     add_record("DD_" + dataset_name + "_" + bucketList[bucketID], new Date().getTime() - tmp_time);
-                    relErr_dd[bucketID] += Math.abs(approx_mad_v - exact_mad_v) / exact_mad_v;
-                    System.out.print("\t" + (Math.abs(approx_mad_v - exact_mad_v) / exact_mad_v));
+                    relErr_dd[bucketID] += Math.abs(approx_mad_v[1] - exact_mad_v) / exact_mad_v;
+                    System.out.print("\t" + (Math.abs(approx_mad_v[1] - exact_mad_v) / exact_mad_v));
                 }
                 System.out.println();
             }

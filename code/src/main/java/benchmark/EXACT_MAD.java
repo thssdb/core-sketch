@@ -26,7 +26,19 @@ public class EXACT_MAD {
         queue=null;
 //        System.out.println(mad);
 //        return memory;
-        return new double[]{memory,mad};
+//        return new double[]{memory,mad};
+        return new double[]{memory,mad,median};
+    }
+
+
+    public static double exact_median(double[] data, int des) {
+        memory = 0;
+        DoubleArrayList queue = new DoubleArrayList(des);
+        for(int i = 0; i < des; i++){
+            queue.add(data[i]);
+        }
+        median = getKth(queue,0,des,(des-1)/2);
+        return median;
     }
 
     public static double query(DoubleArrayList data){

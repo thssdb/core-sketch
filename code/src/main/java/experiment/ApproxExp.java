@@ -51,7 +51,7 @@ public class ApproxExp {
                         relErr_core += Math.abs(core_mad - exact_mad_v) / exact_mad_v;
 
                         double time_dd = System.nanoTime();
-                        double dd_mad = DD_MAD.dd_mad_calcAlpha(data, maximum - minimum + 1, 5000);
+                        double dd_mad = DD_MAD.dd_mad_calcAlpha(data, maximum - minimum + 1, 5000)[1];
                         times_dd += (System.nanoTime() - time_dd) / 1000000;
                         relErr_dd += Math.abs(dd_mad - exact_mad_v) / exact_mad_v;
                     }
